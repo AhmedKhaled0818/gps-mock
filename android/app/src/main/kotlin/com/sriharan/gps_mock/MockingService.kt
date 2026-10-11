@@ -662,25 +662,39 @@ class MockingService : Service() {
         if (!pushedAny && refused) onMockPushRejected()
     }
 
+    // Slow, mean-reverting wander (meters) so repeated fixes are not identical.
+    private val rng = java.util.Random()
+    private var offN = 0.0
+    private var offE = 0.0
+
     private fun buildLocation(
         provider: String,
         lat: Double,
         lng: Double,
         bearing: Float,
         speedMps: Float,
-    ): Location = Location(provider).apply {
-        latitude = lat
-        longitude = lng
-        altitude = 10.0
-        time = System.currentTimeMillis()
-        speed = speedMps
-        this.bearing = bearing
-        accuracy = 1.0f
-        elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            bearingAccuracyDegrees = 0.1f
-            verticalAccuracyMeters = 0.1f
-            speedAccuracyMetersPerSecond = 0.1f
+    ): Location {
+        val isNetwork = provider == LocationManager.NETWORK_PROVIDER
+        val acc = if (isNetwork) 15f + rng.nextFloat() * 25f
+                  else 4f + rng.nextFloat() * 8f
+
+        offN = offN * 0.9 + rng.nextGaussian() * acc * 0.08
+        offE = offE * 0.9 + rng.nextGaussian() * acc * 0.08
+
+        return Location(provider).apply {
+            latitude = lat + offN / 111_320.0
+            longitude = lng + offE / (111_320.0 * Math.cos(Math.toRadians(lat)))
+            altitude = 10.0 + rng.nextGaussian() * 0.8
+            time = System.currentTimeMillis()
+            speed = speedMps
+            this.bearing = bearing
+            accuracy = acc
+            elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                bearingAccuracyDegrees = 15f + rng.nextFloat() * 15f
+                verticalAccuracyMeters = 3f + rng.nextFloat() * 3f
+                speedAccuracyMetersPerSecond = 0.4f + rng.nextFloat() * 0.5f
+            }
         }
     }
 
