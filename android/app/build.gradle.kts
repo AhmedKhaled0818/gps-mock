@@ -29,7 +29,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.sriharan.gps_mock"
+        applicationId = "com.mylocation.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
