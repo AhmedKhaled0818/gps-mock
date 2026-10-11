@@ -678,8 +678,8 @@ class MockingService : Service() {
         val acc = if (isNetwork) 15f + rng.nextFloat() * 25f
                   else 4f + rng.nextFloat() * 8f
 
-        offN = offN * 0.9 + rng.nextGaussian() * acc * 0.08
-        offE = offE * 0.9 + rng.nextGaussian() * acc * 0.08
+        offN = offN * 0.9 + rng.nextGaussian() * acc * 0.05
+        offE = offE * 0.9 + rng.nextGaussian() * acc * 0.05
 
         return Location(provider).apply {
             latitude = lat + offN / 111_320.0
