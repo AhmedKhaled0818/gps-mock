@@ -23,7 +23,7 @@
         </intent>
     </queries>
     <application
-        android:label="GPS Mock"
+        android:label="MyMOCK"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <provider
